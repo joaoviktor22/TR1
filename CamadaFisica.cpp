@@ -139,9 +139,13 @@ vector<int> CamadaFisicaTransmissoraCodificacaoBipolar(const vector<int>& quadro
 void MeioDeComunicacao(vector<int> fluxoBrutoDeBits){
     vector<int> fluxoBrutoDeBitsPontoA = std::move(fluxoBrutoDeBits);
     vector<int> fluxoBrutoDeBitsPontoB;
+    int erro,porcentagemDeErros;
+    porcentagemDeErros = 0;
+
 
     while (fluxoBrutoDeBitsPontoB.size() != fluxoBrutoDeBitsPontoA.size()) {
         for (int bit : fluxoBrutoDeBitsPontoA) {
+
             fluxoBrutoDeBitsPontoB.push_back(bit);
         }
     }
