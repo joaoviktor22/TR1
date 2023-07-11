@@ -3,13 +3,18 @@
 
 using namespace std;
 
+int tipoDeControleDeErro = 2;
+int tipoDeEnquadramento = 0;
+
 void CamadaEnlaceDadosTransmissora(const vector<int>& quadro){
-    CamadaEnlaceDadosTransmissoraEnquadramento(quadro);
-    CamadaEnlaceDadosTransmissoraControleDeErro(quadro);
+    vector<int> quadroEnquadrado;
+    quadroEnquadrado = CamadaEnlaceDadosTransmissoraEnquadramento(quadro);
+    quadroEnquadrado = CamadaEnlaceDadosTransmissoraControleDeErro(quadroEnquadrado);
+
+    CamadaFisicaTransmissora(quadroEnquadrado);
 }
 
-void CamadaEnlaceDadosTransmissoraEnquadramento(const vector<int>& quadro){
-    int tipoDeEnquadramento = 0;
+vector<int> CamadaEnlaceDadosTransmissoraEnquadramento(const vector<int>& quadro){
     vector<int> quadroEnquadrado;
     switch (tipoDeEnquadramento) {
         case 0: //bit de paridade par
@@ -22,33 +27,44 @@ void CamadaEnlaceDadosTransmissoraEnquadramento(const vector<int>& quadro){
             quadroEnquadrado = CamadaEnlaceDadosTransmissoraEnquadramentoContagemDeCaracteres(quadro);
             break;
     }
+    return quadroEnquadrado;
 }
 
-void CamadaEnlaceDadosTransmissoraControleDeErro(const vector<int>& quadro){
-    int tipoDeControleDeErro = 0;
+vector<int> CamadaEnlaceDadosTransmissoraControleDeErro(const vector<int>& quadro){
+    vector<int> quadroEnquadrado;
     switch (tipoDeControleDeErro) {
         case 0: //bit de paridade par
+            quadroEnquadrado = CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(quadro);
             break;
         case 1 : //CRC
-            //codigo
+            quadroEnquadrado = CamadaEnlaceDadosTransmissoraControleDeErroCRC(quadro);
             break;
         case 2: //codigo de Hamming
+            quadroEnquadrado = CamadaEnlaceDadosTransmissoraControleDeErroCodigoDeHamming(quadro);
+            cout << "hamming:" << endl;
+            for (int bit : quadroEnquadrado) {
+                cout << bit << " ";
+            }
+            cout << endl;
             break;
         default:
-            //bit de paridade par
+            quadroEnquadrado = CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(quadro);
             break;
     }
+    return quadroEnquadrado;
 }
 
 vector<int> CamadaEnlaceDadosTransmissoraEnquadramentoContagemDeCaracteres(const vector<int>& quadro){
     vector<int> quadroEnquadrado;
 
     int tamanhoQuadroBytes = quadro.size() / 8; // Tamanho do quadro em bytes
+    cout << "tamanho: "<<tamanhoQuadroBytes << endl;
 
     // Converter o tamanho do quadro em bits para um vetor de bits
     vector<int> tamanhoQuadroBits;
-    for (int i = 31; i >= 0; i--) {
+    for (int i = 7; i >= 0; i--) {
         int bit = (tamanhoQuadroBytes >> i) & 1;
+        cout << bit;
         tamanhoQuadroBits.push_back(bit);
     }
 
@@ -92,6 +108,7 @@ vector<int> CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(const vect
     // Calcular o bit de paridade (0 se o número de bits 1 for par, 1 se for ímpar)
     int bitParidade = (numBits1 % 2 == 0) ? 0 : 1;
 
+    cout << "paridade:" << bitParidade << endl;
     // Adicionar o bit de paridade ao quadro
     quadroComParidade.push_back(bitParidade);
 
@@ -171,15 +188,16 @@ vector<int> CamadaEnlaceDadosTransmissoraControleDeErroCodigoDeHamming(const vec
 }
 
 void CamadaEnlaceDadosReceptora(const vector<int>& quadro){
-    CamadaEnlaceDadosReceptoraEnquadramento(quadro);
-    CamadaEnlaceDadosReceptoraControleDeErro(quadro);
+    vector<int> quadroEnquadrado;
+    quadroEnquadrado = CamadaEnlaceDadosReceptoraControleDeErro(quadro);
+    quadroEnquadrado = CamadaEnlaceDadosReceptoraEnquadramento(quadroEnquadrado);
 
-    CamadaDeAplicacaoReceptora(quadro);
+    CamadaDeAplicacaoReceptora(quadroEnquadrado);
 }
 
-void CamadaEnlaceDadosReceptoraEnquadramento(const vector<int>& quadro){
-    int tipoDeEnquadramento = 0;
+vector<int> CamadaEnlaceDadosReceptoraEnquadramento(const vector<int>& quadro){
     vector<int> quadroEnquadrado;
+
     switch (tipoDeEnquadramento) {
         case 0: //bit de paridade par
             quadroEnquadrado = CamadaEnlaceDadosReceptoraEnquadramentoContagemDeCaracteres(quadro);
@@ -191,55 +209,173 @@ void CamadaEnlaceDadosReceptoraEnquadramento(const vector<int>& quadro){
             quadroEnquadrado = CamadaEnlaceDadosReceptoraEnquadramentoContagemDeCaracteres(quadro);
             break;
     }
+    return quadroEnquadrado;
 }
 
-void CamadaEnlaceDadosReceptoraControleDeErro(const vector<int>& quadro){
-    int tipoDeControleDeErro = 0;
+vector<int> CamadaEnlaceDadosReceptoraControleDeErro(const vector<int>& quadro){
+    vector<int> quadroEnquadrado;
     switch (tipoDeControleDeErro) {
         case 0: //bit de paridade par
+            quadroEnquadrado = CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(quadro);
             break;
         case 1 : //CRC
-            //codigo
+            quadroEnquadrado = CamadaEnlaceDadosReceptoraControleDeErroCRC(quadro);
             break;
         case 2: //codigo de Hamming
+
+            quadroEnquadrado = CamadaEnlaceDadosReceptoraControleDeErroCodigoDeHamming(quadro);
             break;
         default:
+            quadroEnquadrado = CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(quadro);
             break;
     }
+    return quadroEnquadrado;
 }
 
-vector<int> CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(const vector<int>& quadro){
+vector<int> CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(const vector<int>& quadro) {
+    vector<int> quadroOriginal = quadro; // Criar uma cópia do quadro original
+    quadroOriginal.pop_back();// Remover o bit de paridade do quadro recebido
+    // Contar o número de bits 1 no quadro original
+    int numBits1 = count(quadroOriginal.begin(), quadroOriginal.end(), 1);
+    cout << "numbits:" << numBits1 << endl;
+    // Calcular o bit de paridade do quadro original (0 se o número de bits 1 for par, 1 se for ímpar)
+    int bitParidadeOriginal = (numBits1 % 2 == 0) ? 0 : 1;
+    cout << "paridade:" << bitParidadeOriginal << endl;
+    // Verificar se houve erro comparando o bit de paridade original com o bit de paridade recebido
+    bool erro = (bitParidadeOriginal != quadro.back());
 
+    if (erro) {
+        // Tratamento de erro - pode ser feito alguma ação, como retransmissão do quadro
+        cout << "Erro na transmissão - Bit de paridade par não coincide!" << endl;
+    } else {
+        cout << "Quadro recebido corretamente - Bit de paridade par coincide!" << endl;
+    }
+
+    return quadroOriginal;
 }
 
-vector<int> CamadaEnlaceDadosReceptoraControleDeErroCRC(const vector<int>& quadro){
+vector<int> CamadaEnlaceDadosReceptoraControleDeErroCRC(const vector<int>& quadro) {
+    // Polinômio gerador
+    vector<int> gerador = {1, 0, 1, 1};  // Exemplo de polinômio gerador: x^3 + 1 (representado como 1011)
 
+    vector<int> quadroComCRC = quadro;
+    vector<int> resto(gerador.size() - 1, 0);  // Vetor para armazenar o resto da divisão
+
+    for (int i = 0; i < quadro.size(); i++) {
+        if (quadroComCRC[i] == 1) {
+            for (int j = 0; j < gerador.size(); j++) {
+                quadroComCRC[i + j] ^= gerador[j];
+            }
+        }
+    }
+
+// Verificar se houve erro comparando o resultado da divisão (resto) com um vetor de zeros
+    bool erro = any_of(resto.begin(), resto.end(), [](int bit) { return bit == 1; });
+
+    if (erro) {
+        // Tratamento de erro - pode ser feito alguma ação, como retransmissão do quadro
+        cout << "Erro na transmissão - CRC não coincide!" << endl;
+    } else {
+        cout << "Quadro recebido corretamente - CRC coincide!" << endl;
+    }
+
+// Remover o CRC do quadro recebido
+    vector<int> quadroOriginal(quadro.begin(), quadro.end() - (gerador.size() - 1));
+
+    return quadroOriginal;
 }
 
-vector<int> CamadaEnlaceDadosReceptoraControleDeErroCodigoDeHamming(const vector<int>& quadro){
+vector<int> CamadaEnlaceDadosReceptoraControleDeErroCodigoDeHamming(const vector<int>& quadro) {
+    int m = quadro.size();  // Número de bits de dados
+    int r = 0;              // Número de bits de redundância
 
+    // Determinar o número de bits de redundância necessários
+    while ((1 << r) < m + r + 1) {
+        r++;
+    }
+
+    // Calcular a posição dos bits de redundância
+    vector<int> posicoesBitsRedundancia;
+    for (int i = 0; i < r; i++) {
+        posicoesBitsRedundancia.push_back((1 << i) - 1);
+    }
+    for (int bit : quadro) {
+        cout << bit << " ";
+    }
+    cout << endl;
+
+    // Fazer uma cópia do quadro original para correção
+    vector<int> quadroCorrigido = quadro;
+
+    bool erro = false;
+    for (int i = 0; i < r; i++) {
+        int posicaoBitRedundancia = (1 << i) - 1;
+        int paridade = 0;
+        for (int j = posicaoBitRedundancia; j < m + r; j += (1 << (i + 1))) {
+            for (int k = 0; k < (1 << i); k++) {
+                if (j + k < m + r) {
+                    paridade ^= quadroCorrigido[j + k];
+                }
+            }
+        }
+        if (paridade != 0) {
+            erro = true;
+            // Corrigir o bit de erro
+            quadroCorrigido[posicaoBitRedundancia] ^= 1;
+        }
+    }
+    for (int bit : quadroCorrigido) {
+        cout << bit << " ";
+    }
+    cout << endl;
+
+
+    if (erro) {
+        // Tratamento de erro - pode ser feito alguma ação, como retransmissão do quadro
+        cout << "Erro na transmissão - Código de Hamming detectou um erro e corrigiu!" << endl;
+    } else {
+        cout << "Quadro recebido corretamente - Código de Hamming não detectou erro!" << endl;
+    }
+
+    // Remover os bits de redundância do quadro corrigido
+    vector<int> quadroOriginal;
+    int posQuadro = 0;
+    int posRedundancia = 0;
+    for (int i = 0; i < m + r; i++) {
+        if (i != posicoesBitsRedundancia[posRedundancia]) {
+            quadroOriginal.push_back(quadroCorrigido[i]);
+            posQuadro++;
+        } else {
+            posRedundancia++;
+        }
+    }
+    for (int bit : quadroOriginal) {
+        cout << bit << " ";
+    }
+    cout << endl;
+
+    return quadroOriginal;
 }
 
 vector<int> CamadaEnlaceDadosReceptoraEnquadramentoContagemDeCaracteres(const vector<int>& quadro){
     vector<int> quadroOriginal;
 
     // Verificar se há bits suficientes para o tamanho do quadro no cabeçalho
-    if (quadro.size() >= 32) {
+    if (quadro.size() >= 8) {
         // Extrair o tamanho do quadro em bytes do cabeçalho
         int tamanhoQuadroBytes = 0;
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 8; i++) {
             tamanhoQuadroBytes = (tamanhoQuadroBytes << 1) | quadro[i];
         }
 
         // Verificar se há bits suficientes para o quadro completo (incluindo o cabeçalho)
-        if (quadro.size() >= 32 + tamanhoQuadroBytes * 8) {
+        if (quadro.size() >= 8 + tamanhoQuadroBytes * 8) {
             // Extrair os bits do quadro original
-            for (int i = 32; i < 32 + tamanhoQuadroBytes * 8; i++) {
+            for (int i = 8; i < 8 + tamanhoQuadroBytes * 8; i++) {
                 quadroOriginal.push_back(quadro[i]);
             }
         }
     }
-
     return quadroOriginal;
 }
 
@@ -257,6 +393,5 @@ vector<int> CamadaEnlaceDadosReceptoraEnquadramentoInsercaoDeBytes(const vector<
         // Adicionar o quadro sem flags ao quadro original
         quadroOriginal.insert(quadroOriginal.end(), quadroSemFlag.begin(), quadroSemFlag.end());
     }
-
     return quadroOriginal;
 }

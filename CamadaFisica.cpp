@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 #include "CamadaFisica.h"
+#include "CamadaEnlace.h"
 
 using namespace std;
 
@@ -56,8 +57,8 @@ void AplicacaoTransmissora () {
 
 void CamadaDeAplicacaoTransmissora (const string& mensagem) {
     vector<int> quadro = ASCIIparaBits(mensagem);
-
-	CamadaFisicaTransmissora(quadro);
+    //camada de enlace de dados transmissora//
+    CamadaEnlaceDadosTransmissora(quadro);
 }
 
 void CamadaFisicaTransmissora(const vector<int>& quadro){
@@ -170,8 +171,8 @@ void CamadaFisicaReceptora(const vector<int>& quadro){
             fluxoBrutoDeBits = CamadaFisicaReceptoraDecodificacaoBinaria(quadro);
             break;
 	}
+    CamadaEnlaceDadosReceptora(fluxoBrutoDeBits);
 
-	CamadaDeAplicacaoReceptora(fluxoBrutoDeBits);
 }
 
 vector<int> CamadaFisicaReceptoraDecodificacaoBinaria(const vector<int>& quadro){

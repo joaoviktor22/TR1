@@ -11,16 +11,16 @@
 using namespace std;
 
 void CamadaEnlaceDadosTransmissora(const vector<int>& quadro);
-void CamadaEnlaceDadosTransmissoraEnquadramento(const vector<int>& quadro);
-void CamadaEnlaceDadosTransmissoraControleDeErro(const vector<int>& quadro);
+vector<int> CamadaEnlaceDadosTransmissoraEnquadramento(const vector<int>& quadro);
+vector<int> CamadaEnlaceDadosTransmissoraControleDeErro(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosTransmissoraEnquadramentoContagemDeCaracteres(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosTransmissoraEnquadramentoInsercaoDeBytes(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosTransmissoraControleDeErroBitParidadePar(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosTransmissoraControleDeErroCRC(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosTransmissoraControleDeErroCodigoDeHamming(const vector<int>& quadro);
 void CamadaEnlaceDadosReceptora(const vector<int>& quadro);
-void CamadaEnlaceDadosReceptoraEnquadramento(const vector<int>& quadro);
-void CamadaEnlaceDadosReceptoraControleDeErro(const vector<int>& quadro);
+vector<int> CamadaEnlaceDadosReceptoraEnquadramento(const vector<int>& quadro);
+vector<int> CamadaEnlaceDadosReceptoraControleDeErro(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosReceptoraControleDeErroBitParidadePar(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosReceptoraControleDeErroCRC(const vector<int>& quadro);
 vector<int> CamadaEnlaceDadosReceptoraControleDeErroCodigoDeHamming(const vector<int>& quadro);
